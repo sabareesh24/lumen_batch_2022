@@ -35,6 +35,14 @@ public class Employee {
 		this.firstName = firstName;
 		this.phoneNumber = phoneNumber;
 	}
+	
+	
+
+	public Employee(String firstName, String emailAddress) {
+		super();
+		this.firstName = firstName;
+		this.emailAddress = emailAddress;
+	}
 
 	public String getFirstName() {
 		return firstName;

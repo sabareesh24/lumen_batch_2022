@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.*;
 
@@ -38,20 +36,35 @@ public class EmployeeServices {
 		}
 	}
 	
-	public void findByName(String firstName) throws EmployeeNotFoundException{
+	public void findByName(String firstName){
 		List<Employee> employeesList=new ArrayList<>();
-		employeesList=this.repository.getByName(firstName);
-		employeesList.forEach(e->logger.info(e));
+		try {
+			employeesList=this.repository.getByName(firstName);
+			employeesList.forEach(e->logger.info(e));
+		} catch (EmployeeNotFoundException e1) {
+			logger.error("Employee with the first name "+firstName+" is not found");
+		}
+		
 	}
 	
-	public void displayNameAndPhoneNumber() throws EmployeeNotFoundException{
-		Map<String,Long> employeesNameAndPhoneNumber=this.repository.getNameAndPhoneNumber();
-		Set<Map.Entry<String,Long>> items=employeesNameAndPhoneNumber.entrySet();
-		items.forEach(e->logger.info("Employee Name : "+e.getKey()+" Employee Phone Number : "+e.getValue()));
+	public void displayNameAndPhoneNumber(){
+		List<String> employeesNameAndPhoneNumber=new ArrayList<>();
+		try {
+			employeesNameAndPhoneNumber = this.repository.getNameAndPhoneNumber();
+			employeesNameAndPhoneNumber.forEach(System.out::println);
+		} catch (EmployeeNotFoundException e) {
+			logger.error("No employee is found");
+		}
+		
 	}
 	
-	public void updateEmailAndPhoneNumber(String initialEmail,String changedEmail,long phoneNumber) throws EmployeeNotFoundException{
-		boolean isUpdated=this.repository.updateEmailAndPhoneNumber(initialEmail, changedEmail, phoneNumber);
+	public void updateEmailAndPhoneNumber(String initialEmail,String changedEmail,long phoneNumber){
+		boolean isUpdated=false;
+		try {
+			isUpdated = this.repository.updateEmailAndPhoneNumber(initialEmail, changedEmail, phoneNumber);
+		} catch (EmployeeNotFoundException e) {
+			logger.error("Employee not found with the mail "+initialEmail);
+		}
 		if(isUpdated) {
 			logger.info("Employee Updated : "+isUpdated);
 		}
@@ -60,8 +73,13 @@ public class EmployeeServices {
 		}
 	}
 	
-	public void deleteEmployeeByFirstName(String firstName) throws  EmployeeNotFoundException{
-		boolean isDeleted=this.repository.deleteByName(firstName);
+	public void deleteEmployeeByFirstName(String firstName,String email){
+		boolean isDeleted=false;
+		try {
+			isDeleted = this.repository.deleteByName(firstName,email);
+		} catch (EmployeeNotFoundException e) {
+			logger.error("Employee not found with the mail id "+email);
+		}
 		if(isDeleted) {
 			logger.info("Employee deleted : "+isDeleted);
 		}
@@ -70,16 +88,26 @@ public class EmployeeServices {
 		}
 	}
 	
-	public void displayNameAndMail(LocalDate date) throws EmployeeNotFoundException {
-		Map<String,String> nameAndMail=this.repository.getNameAndEmail(date);
-		Set<Map.Entry<String,String>> items=nameAndMail.entrySet();
-		items.forEach(e->logger.info("Employee Name : "+e.getKey()+" Employee Mail : "+e.getValue()));
+	public void displayNameAndMail(LocalDate date){
+		List<String> nameAndMail=new ArrayList<>();
+		try {
+			nameAndMail = this.repository.getNameAndEmail(date);
+			nameAndMail.forEach(System.out::println);
+		} catch (EmployeeNotFoundException e) {
+			logger.error("No Employee is found with the birthday date "+date);
+		}
+		
 	}
 	
-	public void displayNameAndPhoneNumber(LocalDate date) throws EmployeeNotFoundException {
-		Map<String,Long> nameAndPhoneNumber=this.repository.getNameAndPhoneNumber(date);
-		Set<Map.Entry<String,Long>> items=nameAndPhoneNumber.entrySet();
-		items.forEach(e->logger.info("Employee Name : "+e.getKey()+" Employee Phone Number : "+e.getValue()));
+	public void displayNameAndPhoneNumber(LocalDate date){
+		List<String> nameAndPhoneNumber=new ArrayList<>();
+		try {
+			nameAndPhoneNumber = this.repository.getNameAndPhoneNumber(date);
+			nameAndPhoneNumber.forEach(System.out::println);
+		} catch (EmployeeNotFoundException e) {
+			logger.error("No Employee is found with the anniversary date "+date);
+		}
+		
 	}
 	
 }
